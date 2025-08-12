@@ -2,7 +2,7 @@
 
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import EditUserForm from "./EditUserForm";
+import EditUserForm from "../../components/EditUserForm";
 
 // TODO: メタデータ
 // TODO: ストーリーの定義
