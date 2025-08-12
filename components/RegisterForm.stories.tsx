@@ -10,7 +10,7 @@ const meta: Meta<typeof RegisterForm> = {
   component: RegisterForm,
 };
 export default meta;
-
+    
 // TODO: ストーリーの定義
 type Story = StoryObj<typeof RegisterForm>;
 
