@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import UserCard from "../components/UserCard";
+import UserCard from "./UserCard";
 import { User } from "../types/User";
 
 interface UserListProps {
@@ -8,7 +8,7 @@ interface UserListProps {
 
 const UserList: React.FC<UserListProps> = ({ users }) => {
   const [list, setList] = useState<User[]>(users);
-  useEffect(() => setList(users), [users]);
+  useEffect(() => setList(users), [users]);// 更新と同期
 
   const handleDeleted = (deletedId: number) => {
     setList((prev) => prev.filter((user) => user.id !== deletedId));
@@ -20,8 +20,10 @@ const UserList: React.FC<UserListProps> = ({ users }) => {
 
   return (
     <div>
-      {users.map((user) => (
-        <UserCard key={user.id} user={user} />
+      {list.map(user => (
+        <div key={user.id} style={{ marginBottom: 12 }}>
+          <UserCard user={user} onDelete={handleDeleted} />
+        </div>
       ))}
     </div>
   );
