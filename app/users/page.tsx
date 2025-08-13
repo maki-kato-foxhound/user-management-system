@@ -2,9 +2,9 @@
 
 import { Alert, Box, CircularProgress, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import UserCard from "../../components/UserCard";
 import { User } from "../../types/User";
 import { fetchUsers } from "../../utils/api";
+import UserList from "../../components/UserList";
 
 const UsersPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -15,7 +15,6 @@ const UsersPage: React.FC = () => {
     const getUsers = async () => {
       try {
         const data = await fetchUsers();
-        console.log(data);
         setUsers(data);
       } catch (err) {
         setError("ユーザーの取得に失敗しました。" + err);
@@ -40,9 +39,7 @@ const UsersPage: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         ユーザー一覧
       </Typography>
-      {users.map((user) => (
-        <UserCard key={user.id} user={user} />
-      ))}
+      <UserList users={users} />
     </Box>
   );
 };
