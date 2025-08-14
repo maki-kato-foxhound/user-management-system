@@ -3,6 +3,14 @@
 import React from "react";
 import { Modal, Box, Typography, Button } from "@mui/material";
 
+interface CustomModalProps {
+  open: boolean;
+  onClose: () => void;
+  title: React.ReactNode;
+  content?: React.ReactNode;
+  onConfirm?: () => void;
+}
+
 const style = {
   position: "absolute" as const,
   top: "50%",
