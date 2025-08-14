@@ -6,6 +6,7 @@ import CustomButton from "./parts/CustomButton";
 import { User } from "../types/User";
 import Link from "next/link";
 import { softDeleteUser } from "@/utils/api";
+import CustomModal from "./parts/CustomModal";
 
 interface UserListProps {
   users: User[];
@@ -13,16 +14,39 @@ interface UserListProps {
 
 const UserList: React.FC<UserListProps> = ({ users }) => {
   const [list, setList] = useState<User[]>(users);
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [targetUser, setTargetUser] = useState<User | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
   useEffect(() => setList(users), [users]); // 更新と同期
 
-  const handleDeleted = async (deletedId: number) => {
-    if (!confirm("本当にこのユーザーを削除しますか？")) return;
+  // 「削除」ボタンを押すと→モーダルを開く
+  const openDeleteModal = (user: User) => {
+    setTargetUser(user);
+    setConfirmOpen(true);
+  };
+  // モーダルを閉じる（キャンセル/背景クリック時）
+  const closeDeleteModal = () => {
+    if (deleting) return; // 実行中は閉じない
+    setConfirmOpen(false);
+    setTargetUser(null);
+  };
+
+  // モーダルの「削除する」→ API 実行
+  const confirmDelete = async () => {
+    if (!targetUser) return;
     try {
-      await softDeleteUser(deletedId); // 論理削除
-      setList((prev) => prev.filter((user) => user.id !== deletedId));
+      setDeleting(true);
+      await softDeleteUser(targetUser.id); // ← 論理削除 API
+      setList((prev) => prev.filter((user) => user.id !== targetUser.id)); // 行を消す
+      setConfirmOpen(false);
+      setTargetUser(null);
     } catch (error) {
       console.error(error);
       alert("削除に失敗しました。");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -66,7 +90,7 @@ const UserList: React.FC<UserListProps> = ({ users }) => {
                   variantType="danger"
                   variant="contained"
                   sx={{ mr: 1 }}
-                  onClick={() => handleDeleted(user.id)}
+                  onClick={() => openDeleteModal(user)}
                 >
                   削除
                 </CustomButton>
@@ -75,6 +99,24 @@ const UserList: React.FC<UserListProps> = ({ users }) => {
           />
         </div>
       ))}
+
+      {/* 削除確認用モーダル */}
+      <CustomModal
+        open={confirmOpen}
+        onClose={closeDeleteModal} // 背景クリック/キャンセルで閉じる
+        onConfirm={confirmDelete} // 「削除する」でAPI実行
+        title="ユーザーを削除しますか？"
+        content={
+          <div>
+            {targetUser ? (
+              <>
+                <div>対象ユーザー</div>
+                <div>{targetUser.name}</div>
+              </>
+            ) : null}
+          </div>
+        }
+      />
     </div>
   );
 };

@@ -59,7 +59,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
           <Button onClick={handleClose}>キャンセル</Button>
           {onConfirm && (
             <Button variant="contained" color="primary" onClick={onConfirm}>
-              確認
+             削除する
             </Button>
           )}
         </Box>
