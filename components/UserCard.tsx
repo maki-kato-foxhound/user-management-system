@@ -11,8 +11,9 @@ import {
 import Link from "next/link";
 import React from "react";
 import { User } from "../types/User";
-import DeleteUserButton from "./DeleteUserButton";
 import { useRouter } from "next/navigation";
+import CustomButton from "./parts/CustomButton";
+import { softDeleteUser } from "../utils/api";
 
 interface UserCardProps {
   user: User;
@@ -22,6 +23,17 @@ interface UserCardProps {
 const UserCard: React.FC<UserCardProps> = ({ user, onDelete }) => {
   const router = useRouter();
   const goDetails = () => router.push(`/users/${user.id}/details`);
+  const handleDelete = async () => {
+    if (!confirm("本当にこのユーザーを削除しますか？")) return;
+    try {
+      await softDeleteUser(user.id); // 論理削除
+      onDelete?.(user.id); // 受け渡しは変えない
+    } catch (error) {
+      console.error(error);
+      alert("削除に失敗しました。");
+    }
+  };
+
   return (
     <Card sx={{ minWidth: 275, mb: 2 }}>
       <CardContent>
@@ -32,11 +44,19 @@ const UserCard: React.FC<UserCardProps> = ({ user, onDelete }) => {
         <Typography variant="body2">役割: {user.role}</Typography>
       </CardContent>
       <CardActions>
-        <Button onClick={goDetails} variant="outlined">詳細</Button>
-        <Button variant="outlined" component={Link} href={`/users/${user.id}/edit`}>
+        <Button onClick={goDetails} variant="outlined">
+          詳細
+        </Button>
+        <Button
+          variant="outlined"
+          component={Link}
+          href={`/users/${user.id}/edit`}
+        >
           編集
         </Button>
-        {onDelete && <DeleteUserButton userId={user.id} onDelete={onDelete} />}
+        <CustomButton variantType="danger" onClick={handleDelete}>
+          削除
+        </CustomButton>
       </CardActions>
     </Card>
   );
