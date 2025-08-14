@@ -1,11 +1,26 @@
 // components/parts/CustomCard.stories.tsx
 
 import type { Meta, StoryObj } from "@storybook/react";
-import CustomCard from "../../components/parts/CustomCard";
-import CustomButton from "../../components/parts/CustomButton";
+import CustomCard from "./CustomCard";
+import CustomButton from "./CustomButton";
 
 // TODO: メタデータ
+const meta: Meta<typeof CustomCard> = {
+  title: "Components/Parts/CustomCard",
+  component: CustomCard,
+  tags: ["autodocs"],
+  parameters: {
+    layout: "centered",
+  },
+  argTypes: {
+    title: { control: "text" },
+    description: { control: "text" },
+  },
+};
+export default meta;
+
 // TODO: ストーリーの定義
+type Story = StoryObj<typeof CustomCard>;
 
 export const Default: Story = {
   args: {
