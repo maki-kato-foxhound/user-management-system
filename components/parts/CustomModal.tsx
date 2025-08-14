@@ -22,6 +22,8 @@ interface CustomModalProps {
   title: React.ReactNode;
   content?: React.ReactNode;
   onConfirm?: () => void;
+  confirmText?: string;
+  cancelText?: string;
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({
@@ -32,15 +34,14 @@ const CustomModal: React.FC<CustomModalProps> = ({
   onConfirm,
   ...rest
 }) => {
-  const handleClose = () => onClose();//ModalのonCloseイベントの引数型とpropsのonClose型を合わせる
+  const handleClose = () => onClose(); //ModalのonCloseイベントの引数型とpropsのonClose型を合わせる
   return (
     <Modal
       open={open}
       onClose={handleClose}
       aria-labelledby="custom-modal-title"
       aria-describedby="custom-modal-description"
-      {...rest} 
-
+      {...rest}
     >
       <Box sx={style}>
         <Typography
