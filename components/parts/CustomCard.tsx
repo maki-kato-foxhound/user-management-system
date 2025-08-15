@@ -27,7 +27,8 @@ const CustomCard: React.FC<CustomCardProps> = ({
   };
 
   return (
-    <Card sx={{ minWidth: 275, mb: 2 }}>
+    // 背景色をつけるために変更
+    <Card sx={[baseCardSx, ...(Array.isArray(sx) ? sx : sx ? [sx] : [])]}>
       <CardContent>
         {/* タイトル */}
         <Typography variant="h6" component="h2" gutterBottom>
