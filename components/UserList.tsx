@@ -12,10 +12,8 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem,
-  Typography,
+  MenuItem
 } from "@mui/material";
-import { unique } from "next/dist/build/utils";
 
 interface UserListProps {
   users: User[];
@@ -35,23 +33,21 @@ const UserList: React.FC<UserListProps> = ({ users }) => {
 
   // プルダウンの選択肢
   const idOptions = useMemo(() => {
-    const ids = Array.from(new Set(list.map((userItem) => userItem.id))).sort(
-      (a, b) => a - b
-    );
+    const ids = Array.from(new Set(list.map((userItem) => userItem.id)))
     return ids;
   }, [list]);
 
   const roleOptions = useMemo(() => {
     const roles = Array.from(
       new Set(list.map((userItem) => userItem.role))
-    ).sort();
+    )
     return roles;
   }, [list]);
 
   const filtered = useMemo(() => {
-    return list.filter((u) => {
-      const matchId = selectedId === "all" ? true : u.id === selectedId;
-      const matchRole = selectedRole === "all" ? true : u.role === selectedRole;
+    return list.filter((currentUser) => {
+      const matchId = selectedId === "all" ? true : currentUser.id === selectedId;
+      const matchRole = selectedRole === "all" ? true : currentUser.role === selectedRole;
       return matchId && matchRole;
     });
   }, [list, selectedId, selectedRole]);
@@ -92,10 +88,62 @@ const UserList: React.FC<UserListProps> = ({ users }) => {
   return (
     <div>
       {/* フィルタUI */}
-      <Box sx={{ display:"grid",gridTemplateColumns:"1fr 1fr auto",gap:2,mb:2}}>
-     {/* IDプルダウン */}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr auto",
+          gap: 2,
+          mb: 2,
+        }}
+      >
+        {/* IDプルダウン */}
+        <FormControl size="small">
+          <InputLabel id="filter-id-label">ID</InputLabel>
+          <Select
+            labelId="filter-id-label"
+            label="ID"
+            value={selectedId === "all" ? "all" : String(selectedId)}
+            onChange={(e) => {
+              const selectedIdValue = e.target.value;
+              setSelectedId(
+                selectedIdValue === "all" ? "all" : Number(selectedIdValue)
+              );
+            }}
+          >
+            <MenuItem value="all">全て</MenuItem>
+            {idOptions.map((id) => (
+              <MenuItem key={id} value={String(id)}>
+                {id}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {/* 役職プルダウン */}
+        <FormControl size="small">
+          <InputLabel id="filter-role-label">役職</InputLabel>
+          <Select
+            labelId="filter-role-label"
+            label="役職"
+            value={selectedRole === "all" ? "all" : String(selectedRole)}
+            onChange={(e) => {
+              const selectedRoleValue = e.target.value;
+              setSelectedRole(
+                selectedRoleValue === "all" ? "all" : selectedRoleValue
+              );
+            }}
+          >
+            <MenuItem value="all">全て</MenuItem>
+            {roleOptions.map((role) => (
+              <MenuItem key={role} value={String(role)}>
+                {role}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </Box>
-      {list.map((user) => (
+
+      {filtered.map((user) => (
         <div key={user.id} style={{ marginBottom: 12 }}>
           <CustomCard
             title={user.name}
@@ -103,6 +151,7 @@ const UserList: React.FC<UserListProps> = ({ users }) => {
               <>
                 <div>メール：{user.email}</div>
                 <div>役割：{user.role}</div>
+                <div>ID：{user.id}</div>
               </>
             }
             actions={
