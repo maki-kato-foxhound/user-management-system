@@ -1,12 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import CustomCard from "./parts/CustomCard";
 import CustomButton from "./parts/CustomButton";
 import { User } from "../types/User";
 import Link from "next/link";
 import { softDeleteUser } from "@/utils/api";
 import CustomModal from "./parts/CustomModal";
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Typography,
+} from "@mui/material";
+import { unique } from "next/dist/build/utils";
 
 interface UserListProps {
   users: User[];
@@ -15,11 +24,37 @@ interface UserListProps {
 const UserList: React.FC<UserListProps> = ({ users }) => {
   const [list, setList] = useState<User[]>(users);
 
+  const [selectedId, setSelectedId] = useState<"all" | number>("all");
+  const [selectedRole, setSelectedRole] = useState<"all" | string>("all");
+
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [targetUser, setTargetUser] = useState<User | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => setList(users), [users]); // 更新と同期
+
+  // プルダウンの選択肢
+  const idOptions = useMemo(() => {
+    const ids = Array.from(new Set(list.map((userItem) => userItem.id))).sort(
+      (a, b) => a - b
+    );
+    return ids;
+  }, [list]);
+
+  const roleOptions = useMemo(() => {
+    const roles = Array.from(
+      new Set(list.map((userItem) => userItem.role))
+    ).sort();
+    return roles;
+  }, [list]);
+
+  const filtered = useMemo(() => {
+    return list.filter((u) => {
+      const matchId = selectedId === "all" ? true : u.id === selectedId;
+      const matchRole = selectedRole === "all" ? true : u.role === selectedRole;
+      return matchId && matchRole;
+    });
+  }, [list, selectedId, selectedRole]);
 
   // 「削除」ボタンを押すと→モーダルを開く
   const openDeleteModal = (user: User) => {
@@ -56,6 +91,10 @@ const UserList: React.FC<UserListProps> = ({ users }) => {
 
   return (
     <div>
+      {/* フィルタUI */}
+      <Box sx={{ display:"grid",gridTemplateColumns:"1fr 1fr auto",gap:2,mb:2}}>
+     {/* IDプルダウン */}
+      </Box>
       {list.map((user) => (
         <div key={user.id} style={{ marginBottom: 12 }}>
           <CustomCard

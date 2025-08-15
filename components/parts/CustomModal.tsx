@@ -2,6 +2,8 @@
 
 import React from "react";
 import { Modal, Box, Typography, Button } from "@mui/material";
+import type { SxProps, Theme } from "@mui/material/styles";
+/** モーダルウィンドウが少し上下に動くモーダル用に追加 */
 
 const style = {
   position: "absolute" as const,
@@ -24,6 +26,8 @@ interface CustomModalProps {
   onConfirm?: () => void;
   confirmText?: string;
   cancelText?: string;
+  /** モーダルウィンドウが少し上下に動くモーダル用に追加 */
+  contentSx?: SxProps<Theme>;
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({
@@ -32,6 +36,9 @@ const CustomModal: React.FC<CustomModalProps> = ({
   title,
   content,
   onConfirm,
+  confirmText,
+  cancelText,
+  contentSx,
   ...rest
 }) => {
   const handleClose = () => onClose(); //ModalのonCloseイベントの引数型とpropsのonClose型を合わせる
@@ -43,7 +50,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
       aria-describedby="custom-modal-description"
       {...rest}
     >
-      <Box sx={style}>
+      <Box sx={[style, contentSx] as SxProps<Theme>}>
         <Typography
           id="custom-modal-title"
           variant="h6"
@@ -56,10 +63,11 @@ const CustomModal: React.FC<CustomModalProps> = ({
           {content}
         </Typography>
         <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
-          <Button onClick={handleClose}>キャンセル</Button>
+          <Button onClick={handleClose}> {cancelText ?? "キャンセル"}</Button>
+
           {onConfirm && (
             <Button variant="contained" color="primary" onClick={onConfirm}>
-             削除する
+              {confirmText ?? "削除する"}
             </Button>
           )}
         </Box>
