@@ -7,13 +7,7 @@ import { User } from "../types/User";
 import Link from "next/link";
 import { softDeleteUser } from "@/utils/api";
 import CustomModal from "./parts/CustomModal";
-import {
-  Box,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem
-} from "@mui/material";
+import { Box, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 
 interface UserListProps {
   users: User[];
@@ -29,28 +23,35 @@ const UserList: React.FC<UserListProps> = ({ users }) => {
   const [targetUser, setTargetUser] = useState<User | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
   useEffect(() => setList(users), [users]); // 更新と同期
 
   // プルダウンの選択肢
   const idOptions = useMemo(() => {
-    const ids = Array.from(new Set(list.map((userItem) => userItem.id)))
+    const ids = Array.from(new Set(list.map((userItem) => userItem.id)));
     return ids;
   }, [list]);
 
   const roleOptions = useMemo(() => {
-    const roles = Array.from(
-      new Set(list.map((userItem) => userItem.role))
-    )
+    const roles = Array.from(new Set(list.map((userItem) => userItem.role)));
     return roles;
   }, [list]);
 
   const filtered = useMemo(() => {
-    return list.filter((currentUser) => {
-      const matchId = selectedId === "all" ? true : currentUser.id === selectedId;
-      const matchRole = selectedRole === "all" ? true : currentUser.role === selectedRole;
+    // フィルタ
+    const filteredList = list.filter((user) => {
+      const matchId = selectedId === "all" ? true : user.id === selectedId;
+      const matchRole =
+        selectedRole === "all" ? true : user.role === selectedRole;
       return matchId && matchRole;
     });
-  }, [list, selectedId, selectedRole]);
+
+    // 並び替え
+    return filteredList.sort((userA, userB) =>
+      sortOrder === "asc" ? userA.id - userB.id : userB.id - userA.id
+    );
+  }, [list, selectedId, selectedRole, sortOrder]);
 
   // 「削除」ボタンを押すと→モーダルを開く
   const openDeleteModal = (user: User) => {
@@ -139,6 +140,20 @@ const UserList: React.FC<UserListProps> = ({ users }) => {
                 {role}
               </MenuItem>
             ))}
+          </Select>
+        </FormControl>
+
+        {/* 並び替えプルダウン */}
+        <FormControl size="small">
+          <InputLabel id="sort-order-label">並び順</InputLabel>
+          <Select
+            labelId="sort-order-label"
+            label="並び順"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
+          >
+            <MenuItem value="asc">ID昇順</MenuItem>
+            <MenuItem value="desc">ID降順</MenuItem>
           </Select>
         </FormControl>
       </Box>
