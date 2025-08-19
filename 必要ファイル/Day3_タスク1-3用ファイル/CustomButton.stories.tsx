@@ -3,6 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import CustomButton from "./CustomButton";
 
+// メタデータ
 const meta: Meta<typeof CustomButton> = {
   title: "Components/Parts/CustomButton",
   component: CustomButton,
